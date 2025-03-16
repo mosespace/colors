@@ -113,10 +113,10 @@ export default function Palette() {
       if (event.code === 'Space') {
         event.preventDefault();
         generateNewPalette();
-      } else if (event.code === 'ArrowLeft') {
+      } else if (event.key === 'ArrowLeft') {
         event.preventDefault();
         goToPrevious();
-      } else if (event.code === 'ArrowRight') {
+      } else if (event.key === 'ArrowRight') {
         event.preventDefault();
         goToNext();
       }
