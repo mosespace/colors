@@ -2,9 +2,15 @@
 
 import { useCallback, useEffect, useState } from 'react';
 
-import { generatePalette } from '@/utils/colors';
 import ColorColumn from './color-column';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { generatePalette } from '@/utils/colors';
+import {
+  ArrowLeft,
+  ArrowRight,
+  Smartphone,
+  Monitor,
+  Space,
+} from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function Palette() {
@@ -12,6 +18,7 @@ export default function Palette() {
   const [isChanging, setIsChanging] = useState(false);
   const [paletteHistory, setPaletteHistory] = useState<string[][]>([]);
   const [historyIndex, setHistoryIndex] = useState(0);
+  const [isMobileView, setIsMobileView] = useState(false);
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -65,6 +72,22 @@ export default function Palette() {
       goToPalette(historyIndex + 1);
     }
   }, [historyIndex, paletteHistory, goToPalette]);
+
+  // Check viewport size when component mounts and on resize
+  useEffect(() => {
+    const checkViewport = () => {
+      setIsMobileView(window.innerWidth < 768);
+    };
+
+    // Initial check
+    checkViewport();
+
+    // Add event listener for window resize
+    window.addEventListener('resize', checkViewport);
+
+    // Cleanup
+    return () => window.removeEventListener('resize', checkViewport);
+  }, []);
 
   // Initialize palette and handle URL parameters
   useEffect(() => {
@@ -133,7 +156,7 @@ export default function Palette() {
   return (
     <div className="h-full w-full relative">
       <div
-        className={`h-full w-full flex transition-opacity duration-300 ${isChanging ? 'opacity-0' : 'opacity-100'}`}
+        className={`h-full w-full flex md:flex-row flex-col transition-opacity duration-300 ${isChanging ? 'opacity-0' : 'opacity-100'}`}
       >
         {colors.map((color, index) => (
           <ColorColumn
@@ -145,44 +168,86 @@ export default function Palette() {
         ))}
       </div>
 
-      {/* Navigation controls */}
-      <div className="fixed top-1/2 left-4 transform -translate-y-1/2 z-10">
-        <button
-          onClick={goToPrevious}
-          disabled={historyIndex <= 0}
-          className={`p-3 rounded-full bg-black/20 backdrop-blur-md text-white 
+      {/* Navigation controls - repositioned for mobile */}
+      {isMobileView ? (
+        // Mobile navigation controls at bottom
+        <div className="fixed bottom-24 left-1/2 transform -translate-x-1/2 z-10 flex space-x-4">
+          <button
+            onClick={goToPrevious}
+            disabled={historyIndex <= 0}
+            className={`p-3 rounded-full bg-black/20 backdrop-blur-md text-white 
                     ${historyIndex <= 0 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-black/30'}`}
-          aria-label="Previous palette"
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </button>
-      </div>
+            aria-label="Previous palette"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </button>
 
-      <div className="fixed top-1/2 right-4 transform -translate-y-1/2 z-10">
-        <button
-          onClick={goToNext}
-          disabled={historyIndex >= paletteHistory.length - 1}
-          className={`p-3 rounded-full bg-black/20 backdrop-blur-md text-white 
+          <button
+            onClick={generateNewPalette}
+            className="p-3 rounded-full bg-black/20 backdrop-blur-md text-white hover:bg-black/30"
+            aria-label="Generate new palette"
+          >
+            <Space className="h-5 w-5" />
+          </button>
+
+          <button
+            onClick={goToNext}
+            disabled={historyIndex >= paletteHistory.length - 1}
+            className={`p-3 rounded-full bg-black/20 backdrop-blur-md text-white 
                     ${historyIndex >= paletteHistory.length - 1 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-black/30'}`}
-          aria-label="Next palette"
-        >
-          <ArrowRight className="h-5 w-5" />
-        </button>
-      </div>
-
-      {/* Instruction overlay */}
-      <div className="fixed left-1/2 transform -translate-x-1/2 bottom-8 flex flex-col items-center space-y-2 animate-fade-in">
-        <div className="flex items-center space-x-2 bg-black/20 backdrop-blur-md text-white px-4 py-2 rounded-full">
-          <span className="text-sm font-medium">Press</span>
-          <kbd className="px-2 py-0.5 bg-white/20 rounded text-sm">Space</kbd>
-          <span className="text-sm font-medium">for new palette</span>
-          <span className="mx-1">|</span>
-          <kbd className="px-2 py-0.5 bg-white/20 rounded text-sm">←</kbd>
-          <span className="text-sm font-medium">Previous</span>
-          <span className="mx-1">|</span>
-          <kbd className="px-2 py-0.5 bg-white/20 rounded text-sm">→</kbd>
-          <span className="text-sm font-medium">Next</span>
+            aria-label="Next palette"
+          >
+            <ArrowRight className="h-5 w-5" />
+          </button>
         </div>
+      ) : (
+        // Desktop navigation controls on sides
+        <>
+          <div className="fixed top-1/2 left-4 transform -translate-y-1/2 z-10">
+            <button
+              onClick={goToPrevious}
+              disabled={historyIndex <= 0}
+              className={`p-3 rounded-full bg-black/20 backdrop-blur-md text-white 
+                        ${historyIndex <= 0 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-black/30'}`}
+              aria-label="Previous palette"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </button>
+          </div>
+
+          <div className="fixed top-1/2 right-4 transform -translate-y-1/2 z-10">
+            <button
+              onClick={goToNext}
+              disabled={historyIndex >= paletteHistory.length - 1}
+              className={`p-3 rounded-full bg-black/20 backdrop-blur-md text-white 
+                        ${historyIndex >= paletteHistory.length - 1 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-black/30'}`}
+              aria-label="Next palette"
+            >
+              <ArrowRight className="h-5 w-5" />
+            </button>
+          </div>
+        </>
+      )}
+
+      {/* Instruction overlay - responsive design */}
+      <div className="fixed left-1/2 transform -translate-x-1/2 bottom-8 flex flex-col items-center space-y-2 animate-fade-in">
+        {isMobileView ? (
+          <div className="bg-black/20 backdrop-blur-md text-white px-4 py-2 rounded-full text-center">
+            <span className="text-xs font-medium">Swipe for navigation</span>
+          </div>
+        ) : (
+          <div className="flex items-center space-x-2 bg-black/20 backdrop-blur-md text-white px-4 py-2 rounded-full">
+            <span className="text-sm font-medium">Press</span>
+            <kbd className="px-2 py-0.5 bg-white/20 rounded text-sm">Space</kbd>
+            <span className="text-sm font-medium">for new palette</span>
+            <span className="mx-1">|</span>
+            <kbd className="px-2 py-0.5 bg-white/20 rounded text-sm">←</kbd>
+            <span className="text-sm font-medium">Previous</span>
+            <span className="mx-1">|</span>
+            <kbd className="px-2 py-0.5 bg-white/20 rounded text-sm">→</kbd>
+            <span className="text-sm font-medium">Next</span>
+          </div>
+        )}
       </div>
     </div>
   );
