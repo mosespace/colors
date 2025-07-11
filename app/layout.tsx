@@ -3,6 +3,7 @@ import './globals.css';
 import Providers from '@/components/providers';
 import { SendFeedback } from '@/components/send-feedback';
 import { siteConfig } from '@/constants/site';
+import { Analytics } from '@vercel/analytics/next';
 
 export const metadata: Metadata = {
   title: 'Color Bliss - Palette Generator',
@@ -17,7 +18,10 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={``}>
-        <Providers>{children}</Providers>
+        <Providers>
+          {children}
+          <Analytics />
+        </Providers>
         <SendFeedback />
       </body>
     </html>
