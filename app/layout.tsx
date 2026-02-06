@@ -1,5 +1,5 @@
-import type { Metadata } from 'next';
 import './globals.css';
+import type { Metadata } from 'next';
 import Providers from '@/components/providers';
 import { SendFeedback } from '@/components/send-feedback';
 import { siteConfig } from '@/constants/site';

@@ -2,6 +2,7 @@
 
 import { hexToHsl, hexToRgb, isLightColor } from '@/utils/colors';
 import { toast } from '@mosespace/toast';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 interface ColorColumnProps {
@@ -13,6 +14,7 @@ interface ColorColumnProps {
 export default function ColorColumn({ color, index, total }: ColorColumnProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [copyFormat, setCopyFormat] = useState<'hex' | 'rgb' | 'hsl'>('hex');
+  const router = useRouter();
 
   const isLight = isLightColor(color);
   const textColor = isLight ? 'text-gray-800' : 'text-white';
@@ -84,6 +86,15 @@ export default function ColorColumn({ color, index, total }: ColorColumnProps) {
             className={`mt-2 px-4 py-1.5 rounded-full backdrop-blur-sm ${dropdownBg} transition-all duration-300 text-sm ${buttonHoverBg}`}
           >
             Copy {copyFormat.toUpperCase()}
+          </button>
+
+          <button
+            onClick={() =>
+              router.push(`/d/${color.replace('#', '').toLocaleLowerCase()}`)
+            }
+            className={`mt-2 px-4 py-1.5 rounded-md backdrop-blur-sm ${dropdownBg} transition-all duration-300 text-sm ${buttonHoverBg}`}
+          >
+            View Details
           </button>
         </div>
       </div>

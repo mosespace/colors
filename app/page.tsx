@@ -2,7 +2,7 @@ import React, { Suspense } from 'react';
 import Palette from '@/components/palette';
 
 function RouteFallback() {
-  return <>placeholder</>;
+  return <></>;
 }
 export default function page() {
   return (

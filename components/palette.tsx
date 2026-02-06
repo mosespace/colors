@@ -2,16 +2,10 @@
 
 import { useCallback, useEffect, useState } from 'react';
 
-import ColorColumn from './color-column';
 import { generatePalette } from '@/utils/colors';
-import {
-  ArrowLeft,
-  ArrowRight,
-  Smartphone,
-  Monitor,
-  Space,
-} from 'lucide-react';
+import { ArrowLeft, ArrowRight, Space } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import ColorColumn from './color-column';
 
 export default function Palette() {
   const [colors, setColors] = useState<string[]>([]);
