@@ -11,6 +11,7 @@ import {
   Layers,
   Box,
 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 interface Props {
   color: string;
@@ -19,7 +20,7 @@ interface Props {
 const ColorSpecPage = ({ color }: Props) => {
   const [copied, setCopied] = useState<string | null>(null);
   const baseHex = color;
-
+  const router = useRouter();
   // Mathematical Shade Generator (Logic-based 50-950 scale)
   const generatePalette = (hex: string) => {
     const weights = [
@@ -120,7 +121,7 @@ ${palette.map((p) => `  ${p.level}: ${p.hex},`).join('\n')}
           <div>
             <div
               className="flex items-center gap-2 mb-8 group cursor-pointer"
-              onClick={() => copy(baseHex)}
+              onClick={() => router.back()}
             >
               <span className="text-[10px] bg-white text-black px-2 py-0.5 font-bold">
                 BASE_HEX
